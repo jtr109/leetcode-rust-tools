@@ -14,7 +14,22 @@ pub struct TreeNode {
 }
 
 impl TreeNode {
-    pub fn from_breadth_first_traversal(data: &Vec<Option<i32>>) -> Option<Rc<RefCell<TreeNode>>> {
+    pub fn new(val: i32) -> Self {
+        Self {
+            val,
+            left: None,
+            right: None,
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct Tree {
+    pub root: Option<Rc<RefCell<TreeNode>>>,
+}
+
+impl Tree {
+    pub fn from_breadth_first_traversal(data: &Vec<Option<i32>>) -> Tree {
         let mut elements = data
             .iter()
             .map(|e| match e {
@@ -24,7 +39,7 @@ impl TreeNode {
             .rev()
             .collect::<Vec<Option<Rc<RefCell<TreeNode>>>>>();
         let root = match elements.pop() {
-            None => return None, // early return None if `data` is empty
+            None => return Self { root: None }, // early return None if `data` is empty
             Some(node) => node,
         };
         let mut nodes = VecDeque::new();
@@ -50,15 +65,7 @@ impl TreeNode {
                 }
             }
         }
-        root
-    }
-
-    pub fn new(val: i32) -> Self {
-        Self {
-            val,
-            left: None,
-            right: None,
-        }
+        Self { root }
     }
 }
 
@@ -94,7 +101,7 @@ mod tests {
                 right: None,
             }))),
         })));
-        assert_eq!(TreeNode::from_breadth_first_traversal(&data), expected);
+        assert_eq!(Tree::from_breadth_first_traversal(&data).root, expected);
     }
 
     #[test]
@@ -135,20 +142,20 @@ mod tests {
                 }))),
             }))),
         })));
-        assert_eq!(TreeNode::from_breadth_first_traversal(&data), expected);
+        assert_eq!(Tree::from_breadth_first_traversal(&data).root, expected);
     }
 
     #[test]
     fn test_empty() {
         let data = vec![];
-        assert_eq!(TreeNode::from_breadth_first_traversal(&data), None);
+        assert_eq!(Tree::from_breadth_first_traversal(&data).root, None);
     }
 
     #[test]
     fn test_one_element() {
         let data = vec![Some(3)];
         assert_eq!(
-            TreeNode::from_breadth_first_traversal(&data),
+            Tree::from_breadth_first_traversal(&data).root,
             Some(Rc::new(RefCell::new(TreeNode::new(3))))
         );
     }
