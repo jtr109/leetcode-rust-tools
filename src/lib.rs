@@ -13,8 +13,8 @@ pub struct TreeNode {
     pub right: Option<Rc<RefCell<TreeNode>>>,
 }
 
-impl<'a> TreeNode {
-    pub fn from_breadth(data: &'a Vec<Option<i32>>) -> Option<Rc<RefCell<TreeNode>>> {
+impl TreeNode {
+    pub fn from_breadth_first_traversal(data: &Vec<Option<i32>>) -> Option<Rc<RefCell<TreeNode>>> {
         let mut elements = data
             .iter()
             .map(|e| match e {
@@ -24,7 +24,7 @@ impl<'a> TreeNode {
             .rev()
             .collect::<Vec<Option<Rc<RefCell<TreeNode>>>>>();
         let root = match elements.pop() {
-            None => return None,
+            None => return None, // early return None if `data` is empty
             Some(node) => node,
         };
         let mut nodes = VecDeque::new();
@@ -94,7 +94,7 @@ mod tests {
                 right: None,
             }))),
         })));
-        assert_eq!(TreeNode::from_breadth(&data), expected);
+        assert_eq!(TreeNode::from_breadth_first_traversal(&data), expected);
     }
 
     #[test]
@@ -135,20 +135,20 @@ mod tests {
                 }))),
             }))),
         })));
-        assert_eq!(TreeNode::from_breadth(&data), expected);
+        assert_eq!(TreeNode::from_breadth_first_traversal(&data), expected);
     }
 
     #[test]
     fn test_empty() {
         let data = vec![];
-        assert_eq!(TreeNode::from_breadth(&data), None);
+        assert_eq!(TreeNode::from_breadth_first_traversal(&data), None);
     }
 
     #[test]
     fn test_one_element() {
         let data = vec![Some(3)];
         assert_eq!(
-            TreeNode::from_breadth(&data),
+            TreeNode::from_breadth_first_traversal(&data),
             Some(Rc::new(RefCell::new(TreeNode::new(3))))
         );
     }
