@@ -28,8 +28,10 @@ pub struct Tree {
     pub root: Option<Rc<RefCell<TreeNode>>>,
 }
 
-impl Tree {
-    pub fn from_breadth_first_traversal(data: &Vec<Option<i32>>) -> Tree {
+type BreadthFirstTraversalValues = Vec<Option<i32>>;
+
+impl std::convert::From<BreadthFirstTraversalValues> for Tree {
+    fn from(data: BreadthFirstTraversalValues) -> Tree {
         let mut elements = data
             .iter()
             .map(|e| match e {
@@ -101,7 +103,7 @@ mod tests {
                 right: None,
             }))),
         })));
-        assert_eq!(Tree::from_breadth_first_traversal(&data).root, expected);
+        assert_eq!(Tree::from(data).root, expected);
     }
 
     #[test]
@@ -142,20 +144,20 @@ mod tests {
                 }))),
             }))),
         })));
-        assert_eq!(Tree::from_breadth_first_traversal(&data).root, expected);
+        assert_eq!(Tree::from(data).root, expected);
     }
 
     #[test]
     fn test_empty() {
         let data = vec![];
-        assert_eq!(Tree::from_breadth_first_traversal(&data).root, None);
+        assert_eq!(Tree::from(data).root, None);
     }
 
     #[test]
     fn test_one_element() {
         let data = vec![Some(3)];
         assert_eq!(
-            Tree::from_breadth_first_traversal(&data).root,
+            Tree::from(data).root,
             Some(Rc::new(RefCell::new(TreeNode::new(3))))
         );
     }
