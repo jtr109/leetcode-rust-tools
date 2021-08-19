@@ -13,36 +13,16 @@ pub struct TreeNode {
     pub right: Option<Rc<RefCell<TreeNode>>>,
 }
 
-impl TreeNode {
-    fn convert_indexed_element(
-        data: &Vec<Option<i32>>,
-        index: usize,
-    ) -> Option<Rc<RefCell<TreeNode>>> {
-        match data.get(index) {
-            None => None,
-            Some(&v) => v.map(|val| {
-                Rc::new(RefCell::new(TreeNode {
-                    val,
-                    left: Self::convert_indexed_element(data, index * 2 + 1),
-                    right: Self::convert_indexed_element(data, index * 2 + 2),
-                }))
-            }),
-        }
-    }
-
-    pub fn convert(data: &Vec<Option<i32>>) -> Option<Rc<RefCell<TreeNode>>> {
-        Self::convert_indexed_element(data, 0)
-    }
-
-    pub fn from_traversal(data: Vec<Option<i32>>) -> Option<Rc<RefCell<TreeNode>>> {
+impl<'a> TreeNode {
+    pub fn from_breadth(data: &'a Vec<Option<i32>>) -> Option<Rc<RefCell<TreeNode>>> {
         if data.len() == 0 {
             return None;
         }
         let mut elements = data
-            .into_iter()
+            .iter()
             .map(|e| match e {
                 None => None,
-                Some(val) => Some(Rc::new(RefCell::new(TreeNode::new(val)))),
+                Some(val) => Some(Rc::new(RefCell::new(TreeNode::new(*val)))),
             })
             .rev()
             .collect::<Vec<Option<Rc<RefCell<TreeNode>>>>>();
@@ -51,13 +31,15 @@ impl TreeNode {
             Some(node) => node,
         };
         let mut nodes = VecDeque::new();
-        nodes.push_back(&root);
+        nodes.push_back(root.clone());
         while let Some(e) = nodes.pop_front() {
             match e {
-                None => break,
+                None => continue,
                 Some(parent) => {
                     parent.as_ref().borrow_mut().left = elements.pop().unwrap_or(None);
                     parent.as_ref().borrow_mut().right = elements.pop().unwrap_or(None);
+                    nodes.push_back(parent.borrow().left.clone());
+                    nodes.push_back(parent.borrow().right.clone());
                 }
             }
         }
@@ -105,7 +87,7 @@ mod tests {
                 right: None,
             }))),
         })));
-        assert_eq!(TreeNode::convert(&data), expected);
+        assert_eq!(TreeNode::from_breadth(&data), expected);
     }
 
     #[test]
@@ -146,6 +128,6 @@ mod tests {
                 }))),
             }))),
         })));
-        assert_eq!(TreeNode::convert(&data), expected);
+        assert_eq!(TreeNode::from_breadth(&data), expected);
     }
 }
