@@ -23,9 +23,15 @@ impl TreeNode {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Tree {
     pub root: Option<Rc<RefCell<TreeNode>>>,
+}
+
+impl Tree {
+    pub fn root(&self) -> Option<Rc<RefCell<TreeNode>>> {
+        self.root.clone()
+    }
 }
 
 struct BreadthFirstTraversalValues(Vec<Option<i32>>);
@@ -104,7 +110,10 @@ mod tests {
                 right: None,
             }))),
         })));
-        assert_eq!(Tree::from(BreadthFirstTraversalValues(data)).root, expected);
+        assert_eq!(
+            Tree::from(BreadthFirstTraversalValues(data)).root(),
+            expected
+        );
     }
 
     #[test]
@@ -145,20 +154,29 @@ mod tests {
                 }))),
             }))),
         })));
-        assert_eq!(Tree::from(BreadthFirstTraversalValues(data)).root, expected);
+        assert_eq!(
+            Tree::from(BreadthFirstTraversalValues(data)).root(),
+            expected
+        );
     }
 
     #[test]
     fn test_empty() {
         let data = vec![];
         let expected = None;
-        assert_eq!(Tree::from(BreadthFirstTraversalValues(data)).root, expected);
+        assert_eq!(
+            Tree::from(BreadthFirstTraversalValues(data)).root(),
+            expected
+        );
     }
 
     #[test]
     fn test_one_element() {
         let data = vec![Some(3)];
         let expected = Some(Rc::new(RefCell::new(TreeNode::new(3))));
-        assert_eq!(Tree::from(BreadthFirstTraversalValues(data)).root, expected);
+        assert_eq!(
+            Tree::from(BreadthFirstTraversalValues(data)).root(),
+            expected
+        );
     }
 }
