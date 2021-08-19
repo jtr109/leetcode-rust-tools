@@ -36,10 +36,20 @@ impl<'a> TreeNode {
             match e {
                 None => continue,
                 Some(parent) => {
-                    parent.as_ref().borrow_mut().left = elements.pop().unwrap_or(None);
-                    parent.as_ref().borrow_mut().right = elements.pop().unwrap_or(None);
-                    nodes.push_back(parent.borrow().left.clone());
-                    nodes.push_back(parent.borrow().right.clone());
+                    match elements.pop() {
+                        None => break,
+                        Some(left) => {
+                            parent.as_ref().borrow_mut().left = left;
+                            nodes.push_back(parent.borrow().left.clone());
+                        }
+                    }
+                    match elements.pop() {
+                        None => break,
+                        Some(right) => {
+                            parent.as_ref().borrow_mut().right = right;
+                            nodes.push_back(parent.borrow().right.clone());
+                        }
+                    }
                 }
             }
         }
