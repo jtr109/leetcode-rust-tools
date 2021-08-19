@@ -15,9 +15,6 @@ pub struct TreeNode {
 
 impl<'a> TreeNode {
     pub fn from_breadth(data: &'a Vec<Option<i32>>) -> Option<Rc<RefCell<TreeNode>>> {
-        if data.len() == 0 {
-            return None;
-        }
         let mut elements = data
             .iter()
             .map(|e| match e {
@@ -27,7 +24,7 @@ impl<'a> TreeNode {
             .rev()
             .collect::<Vec<Option<Rc<RefCell<TreeNode>>>>>();
         let root = match elements.pop() {
-            None => unreachable!("the length of elements must be larger than 0"),
+            None => return None,
             Some(node) => node,
         };
         let mut nodes = VecDeque::new();
@@ -139,5 +136,20 @@ mod tests {
             }))),
         })));
         assert_eq!(TreeNode::from_breadth(&data), expected);
+    }
+
+    #[test]
+    fn test_empty() {
+        let data = vec![];
+        assert_eq!(TreeNode::from_breadth(&data), None);
+    }
+
+    #[test]
+    fn test_one_element() {
+        let data = vec![Some(3)];
+        assert_eq!(
+            TreeNode::from_breadth(&data),
+            Some(Rc::new(RefCell::new(TreeNode::new(3))))
+        );
     }
 }
