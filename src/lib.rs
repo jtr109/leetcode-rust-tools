@@ -28,11 +28,12 @@ pub struct Tree {
     pub root: Option<Rc<RefCell<TreeNode>>>,
 }
 
-type BreadthFirstTraversalValues = Vec<Option<i32>>;
+struct BreadthFirstTraversalValues(Vec<Option<i32>>);
 
 impl std::convert::From<BreadthFirstTraversalValues> for Tree {
     fn from(data: BreadthFirstTraversalValues) -> Tree {
         let mut elements = data
+            .0
             .iter()
             .map(|e| match e {
                 None => None,
@@ -103,7 +104,7 @@ mod tests {
                 right: None,
             }))),
         })));
-        assert_eq!(Tree::from(data).root, expected);
+        assert_eq!(Tree::from(BreadthFirstTraversalValues(data)).root, expected);
     }
 
     #[test]
@@ -144,21 +145,20 @@ mod tests {
                 }))),
             }))),
         })));
-        assert_eq!(Tree::from(data).root, expected);
+        assert_eq!(Tree::from(BreadthFirstTraversalValues(data)).root, expected);
     }
 
     #[test]
     fn test_empty() {
         let data = vec![];
-        assert_eq!(Tree::from(data).root, None);
+        let expected = None;
+        assert_eq!(Tree::from(BreadthFirstTraversalValues(data)).root, expected);
     }
 
     #[test]
     fn test_one_element() {
         let data = vec![Some(3)];
-        assert_eq!(
-            Tree::from(data).root,
-            Some(Rc::new(RefCell::new(TreeNode::new(3))))
-        );
+        let expected = Some(Rc::new(RefCell::new(TreeNode::new(3))));
+        assert_eq!(Tree::from(BreadthFirstTraversalValues(data)).root, expected);
     }
 }
