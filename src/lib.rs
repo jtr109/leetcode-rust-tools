@@ -41,10 +41,7 @@ impl std::convert::From<BreadthFirstTraversalValues> for Tree {
         let mut elements = data
             .0
             .iter()
-            .map(|e| match e {
-                None => None,
-                Some(val) => Some(Rc::new(RefCell::new(TreeNode::new(*val)))),
-            })
+            .map(|e| e.map(|val| Rc::new(RefCell::new(TreeNode::new(val)))))
             .rev()
             .collect::<Vec<Option<Rc<RefCell<TreeNode>>>>>();
         let root = match elements.pop() {
